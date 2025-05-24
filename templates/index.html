@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Time Complexity Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+        }
+        button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Python Time Complexity Analyzer</h1>
+    <p>Paste your Python code below to estimate its time complexity.</p>
+    <textarea id="codeInput" placeholder="Enter your Python code here..."></textarea>
+    <br>
+    <button onclick="analyzeCode()">Analyze</button>
+    <h2>Result:</h2>
+    <pre id="result">(Result will appear here)</pre>
+
+    <script>
+        async function analyzeCode() {
+            const code = document.getElementById('codeInput').value;
+            const resultElement = document.getElementById('result');
+
+            resultElement.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch('http://localhost:5000/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultElement.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
