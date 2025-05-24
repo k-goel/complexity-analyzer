@@ -41,7 +41,7 @@
             resultElement.textContent = 'Analyzing...';
 
             try {
-                const response = await fetch('http://localhost:5000/analyze', {
+                const response = await fetch('https://complexity-analyzer-v2c0.onrender.com/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
