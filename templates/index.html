@@ -3,58 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Time Complexity Analyzer</title>
+    <title>Python Time Complexity analyser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem;
+        :root {
+            --background: #282c34;
+            --text: #abb2bf;
+            --accent: #61afef;
+            --border-color: #3e4451;
+            --textarea-bg: #21252b;
+            --code-color: #98c379;
+            --hover-accent: #4fa3d1;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            background-color: var(--background);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: var(--accent);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        #main {
+            display: flex;
+            flex: 1;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        #input-section,
+        #output-section {
+            height: calc(100vh - 6rem); /* Adjust for title and padding */
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #input-section {
+            flex: 2;
+        }
+
+        #output-section {
+            flex: 1;
+        }
+
         textarea {
             width: 100%;
-            height: 200px;
-            font-family: monospace;
-        }
-        button {
-            margin-top: 1rem;
-            padding: 0.5rem 1rem;
-        }
-        pre {
-            background-color: #f4f4f4;
+            height: 85%;
+            resize: none;
+            background-color: var(--textarea-bg);
+            color: var(--code-color);
+            border: 1px solid var(--border-color);
             padding: 1rem;
+            font-size: 1rem;
         }
+
+        button {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--accent);
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--hover-accent);
+        }
+
+        pre {
+            background-color: var(--textarea-bg);
+            color: var(--code-color);
+            padding: 1rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid var(--border-color);
+            height: 85%;
+        }
+
+        h2 {
+            color: var(--accent);
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        .info-text {
+            margin: 0;
+            line-height: 1.4;
+            font-size: 0.95rem;
+            color: #888888; 
+            text-align: center;
+        }
+
+        .info-button {
+            position: fixed; /* not absolute */
+            top: 1rem;
+            right: 1rem;
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 900; /* lower than panel */
+            transition: background-color 0.2s ease;
+        }
+
+
+        .info-button:hover {
+            background-color: #666;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background-color: #222;
+            color: #ccc;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.4);
+            padding: 1rem;
+            transition: right 0.3s ease;
+            z-index: 1000; /* higher than info button */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-panel.open {
+            right: 0;
+        }
+
+        .info-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: white;
+        }
+
+        .info-panel-content {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        #output-section h2 {
+            color: var(--green-accent);
+            margin: 0 0 0.25rem 0; /* top right bottom left */
+        }
+        
+        #info-panel a:hover {
+            color: var(--green-accent);
+        }
+
     </style>
 </head>
 <body>
-    <h1>Python Time Complexity Analyzer</h1>
-    <p>Paste your Python code below to estimate its time complexity.</p>
-    <textarea id="codeInput" placeholder="Enter your Python code here..."></textarea>
-    <br>
-    <button onclick="analyzeCode()">Analyze</button>
-    <h2>Result:</h2>
-    <pre id="result">(Result will appear here)</pre>
 
-    <script>
-        async function analyzeCode() {
-            const code = document.getElementById('codeInput').value;
-            const resultElement = document.getElementById('result');
+    <button id="infoBtn" class="info-button">i</button>
 
-            resultElement.textContent = 'Analyzing...';
+    <div id="infoPanel" class="info-panel">
+    <div class="info-panel-header">
+        <h2>About This Project</h2>
+        <button id="closeInfo" class="close-button">&times;</button>
+    </div>
+    <div class="info-panel-content">
+        <div>
+            <p>Hi there! I'm Kabir Goel, a student interested in computer science and algorithm analysis. This project uses Python’s AST module to heuristically analyse the time complexity of code snippets.</p>
+            <p>Connect with me:</p>
+            <div style="display: flex; gap: 1rem; font-size: 1.5rem; margin-top: 1rem;">
+                <a href="#" onclick="copyEmail()" title="Click to copy email" style="color: var(--text); cursor: pointer;">
+                <i class="fas fa-envelope"></i>
+                </a>
+                <a href="https://www.instagram.com/kabir.g01/" target="_blank" style="color: var(--text);">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/kabir-goel-7b878531a/" target="_blank" style="color: var(--text);">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
 
-            try {
-                const response = await fetch('https://complexity-analyzer-v2c0.onrender.com/analyze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ code })
-                });
+    <h1>Python Time Complexity analyser</h1>
+    <p class="info-text">
+        This works best with a defined function, as the analyser tracks runtime per parameter.<br>
+        It also works without one.
+    </p>
+    <div id="main">
+        <div id="input-section">
+            <textarea id="codeInput" placeholder="Paste your Python code here..."></textarea>
+            <button onclick="analyseCode()">analyse</button>
+        </div>
+        <div id="output-section">
+            <h2>Result:</h2>
+            <pre id="result">(Result will appear here)</pre>
+        </div>
+    </div>
 
-                const data = await response.json();
-                resultElement.textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                resultElement.textContent = 'Error: ' + error.message;
+<script>
+    async function analyseCode() {
+        const code = document.getElementById('codeInput').value;
+        const resultElement = document.getElementById('result');
+
+        resultElement.textContent = 'analysing...';
+
+        try {
+            const response = await fetch('/analyse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                resultElement.textContent = 'Error: ' + data.error;
+                return;
             }
+
+            let output = '';
+            output += `Estimated Time Complexity: ${data.estimated_time_complexity}\n`;
+
+            if (data.dominant_parameter && data.dominant_parameter !== 'N/A') {
+                output += `Dominant Parameter: ${data.dominant_parameter}\n\n`;
+            }
+
+            if (data.complexity_per_parameter && Object.keys(data.complexity_per_parameter).length > 0) {
+                output += `Complexity Per Parameter:\n`;
+                for (const [param, comp] of Object.entries(data.complexity_per_parameter)) {
+                    output += `  - ${param}: ${comp}\n`;
+                }
+                output += `\n`;
+            }
+
+            output += `Loops Detected: ${data.loops_detected}\n`;
+            output += `Function Calls: ${data.function_calls}\n`;
+            output += `Recursive Calls: ${data.recursive_calls}\n`;
+
+            resultElement.textContent = output;
+        } catch (error) {
+            resultElement.textContent = 'Error: ' + error.message;
         }
-    </script>
+    }
+
+    document.getElementById("infoBtn").onclick = () => {
+        document.getElementById("infoPanel").classList.add("open");
+    };
+
+    document.getElementById("closeInfo").onclick = () => {
+        document.getElementById("infoPanel").classList.remove("open");
+    };
+
+  function copyEmail() {
+    const email = "kabirgoel1201@gmail.com";
+    navigator.clipboard.writeText(email).then(() => {
+      alert("Email copied to clipboard!");
+    }).catch(err => {
+      console.error('Failed to copy email: ', err);
+    });
+  }
+
+</script>
+
+
+
 </body>
 </html>
